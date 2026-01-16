@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для моей любимой Сони</title>
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Georgia:ital@1&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; background: #fff5f7; font-family: 'Montserrat', sans-serif; color: #4a4a4a; overflow-x: hidden; }
+        
+        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0; animation: twinkle var(--duration) infinite; }
+        @keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: 0.7; transform: scale(1.2); } }
+
+        header { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: white; position: relative; z-index: 2; }
+        h1 { font-weight: 700; font-size: 2.2rem; color: #000; margin-bottom: 20px; animation: heartbeat 1.5s infinite; padding: 0 20px; }
+        
+        .container { max-width: 700px; margin: 0 auto; padding: 50px 20px; position: relative; z-index: 2; }
+        
+        .story-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); margin-bottom: 50px; text-align: center; opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; position: relative; }
+        .story-card.visible { opacity: 1; transform: translateY(0); }
+        
+        /* ИГРА: MEMORY */
+        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
+        .memory-card { height: 70px; background: #000; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; color: transparent; transition: 0.3s; }
+        .memory-card.flipped { background: #fff; border: 2px solid #000; color: #d63384; }
+        .memory-card.matched { background: #fff0f3; color: #d63384; border: none; cursor: default; }
+
+        /* ИГРА: РОМАШКА С РОЗОВЫМИ ЛЕПЕСТКАМИ */
+        .flower-container { position: relative; width: 200px; height: 200px; margin: 0 auto; cursor: pointer; }
+        .petal { 
+            position: absolute; width: 40px; height: 90px; 
+            background: #ffc1d1; /* Тот самый розовый цвет */
+            border: 1px solid #ff99b3; border-radius: 50px; left: 80px; transform-origin: bottom center; transition: 0.5s; 
+        }
+        .flower-center { position: absolute; width: 60px; height: 60px; background: #ffd700; border-radius: 50%; left: 70px; top: 70px; z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+        .petal.plucked { opacity: 0; transform: translateY(-100px) rotate(45deg); pointer-events: none; }
+
+        /* ТАЙМЕР */
+        .timer-container { text-align: center; margin: -30px auto 40px; position: relative; z-index: 3; }
+        .timer-box { background: white; display: inline-block; padding: 15px 30px; border-radius: 15px; border: 2px solid #000; }
+        #timer { font-weight: 700; font-size: 1.1rem; color: #000; }
+
+        .hug-btn { background: #000; color: white; border: none; padding: 14px 28px; border-radius: 50px; cursor: pointer; font-weight: 700; transition: 0.3s; margin-top: 10px; font-family: 'Montserrat', sans-serif; }
+        .hug-btn:hover { background: #d63384; transform: scale(1.05); }
+        
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 999; }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; border: 3px solid #000; z-index: 1000; text-align: center; width: 85%; max-width: 400px; }
+
+        .heart { position: fixed; top: -10vh; font-size: 20px; color: #d63384; z-index: 1; pointer-events: none; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        
+        .surprise-btn { background: #000; color: white; border: none; padding: 15px 30px; border-radius: 15px; cursor: pointer; font-weight: 700; display: block; margin: 30px auto; animation: heartbeat 2s infinite; }
+        footer { font-weight: 700; text-align: center; padding: 60px 20px; font-size: 1.2rem; color: #000; }
+    </style>
+</head>
+<body>
+
+    <div class="stars-container" id="stars"></div>
+
+    <header>
+        <h1>Люблю тебя сильно, любимка моя</h1>
+        <button class="hug-btn" onclick="showModal('hug-modal')">Обнять из Павлодара в Омск 🫂</button>
+    </header>
+
+    <div class="timer-container">
+        <div class="timer-box">
+            <span style="color: #666; font-size: 0.7rem; display: block; margin-bottom: 5px; font-weight: 700;">МЫ СЧАСТЛИВЫ УЖЕ:</span>
+            <span id="timer">Загрузка...</span>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div class="story-card visible">
+            <h3 style="margin-top: 0;">Найди пары наших чувств ❤️</h3>
+            <div class="memory-grid" id="memory-grid"></div>
+        </div>
+
+        <div class="story-card">
+            <p>"Расстояние — это лишь цифры, когда сердца бьются в унисон."</p>
+            <span style="font-size: 0.8rem; font-weight: 700;">Павлодар — Омск</span>
+        </div>
+
+        <div class="story-card">
+            <h3 style="margin-top: 0;">Розовая ромашка желаний ✨</h3>
+            <p style="font-size: 0.8rem; margin-bottom: 30px;">Оторви лепестки, чтобы услышать мои мысли</p>
+            <div class="flower-container" id="flower" onclick="pluckPetal()">
+                <div class="flower-center">НАЖМИ</div>
+            </div>
+            <p id="petal-text" style="margin-top: 20px; font-weight: 700; color: #d63384; min-height: 1.5em;"></p>
+        </div>
+
+        <button class="surprise-btn" onclick="showModal('final-modal')">Нажми сюда, котеночек мой</button>
+    </div>
+
+    <div id="overlay" onclick="closeAllModals()"></div>
+    
+    <div id="hug-modal" class="modal">
+        <img src="https://c.tenor.com/791c5e933e14440a3594890250616b76/tenor.gif" alt="Объятия" style="width:100%; border-radius:15px;">
+        <p style="font-weight: 700;">Крепкое объятие доставлено из Павлодара прямиком в Омск! ❤️</p>
+        <button class="hug-btn" onclick="closeAllModals()">Люблю!</button>
+    </div>
+
+    <div id="memory-modal" class="modal">
+        <h2 style="color: #d63384;">Ты супер! ❤️</h2>
+        <p>Пары найдены! Как и мы с тобой нашли друг друга среди миллионов людей.</p>
+        <button class="hug-btn" onclick="closeAllModals()">Дальше</button>
+    </div>
+
+    <div id="final-modal" class="modal">
+        <h2>Соня! ❤️</h2>
+        <p>Ты у меня самая лучшая. Помни, что в Павлодаре есть человек, который думает о тебе каждую секунду.</p>
+        <button class="hug-btn" onclick="closeAllModals()">Люблю тебя!</button>
+    </div>
+
+    <script>
+        // ЗВЕЗДЫ
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 40; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.width = star.style.height = Math.random() * 2 + 1 + 'px';
+            star.style.setProperty('--duration', Math.random() * 3 + 2 + 's');
+            starsContainer.appendChild(star);
+        }
+
+        // ТАЙМЕР
+        const startDate = new Date(2025, 6, 3, 14, 5); 
+        function updateTimer() {
+            const diff = new Date() - startDate;
+            const s = Math.floor(diff / 1000);
+            document.getElementById('timer').innerHTML = Math.floor(s / 86400) + "д " + Math.floor((s % 86400) / 3600) + "ч " + Math.floor((s % 3600) / 60) + "м " + (s % 60) + "с";
+        }
+        setInterval(updateTimer, 1000); updateTimer();
+
+        // MEMORY
+        const symbols = ['❤️', '🫂', '✨', '🌸', '📞', '✈️', '💎', '💌'];
+        let cards = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
+        const grid = document.getElementById('memory-grid');
+        let flippedCards = [];
+        let matchedCount = 0;
+
+        cards.forEach((symbol, index) => {
+            const card = document.createElement('div');
+            card.className = 'memory-card';
+            card.dataset.symbol = symbol;
+            card.onclick = () => {
+                if (flippedCards.length < 2 && !card.classList.contains('flipped') && !card.classList.contains('matched')) {
+                    card.classList.add('flipped');
+                    card.innerText = card.dataset.symbol;
+                    flippedCards.push(card);
+                    if (flippedCards.length === 2) setTimeout(checkMatch, 600);
+                }
+            };
+            grid.appendChild(card);
+        });
+
+        function checkMatch() {
+            const [c1, c2] = flippedCards;
+            if (c1.dataset.symbol === c2.dataset.symbol) {
+                c1.classList.add('matched'); c2.classList.add('matched');
+                matchedCount++;
+                if (matchedCount === symbols.length) showModal('memory-modal');
+            } else {
+                c1.classList.remove('flipped'); c2.classList.remove('flipped');
+                c1.innerText = ''; c2.innerText = '';
+            }
+            flippedCards = [];
+        }
+
+        // РОМАШКА
+        const petalTexts = ["Любит", "Обожает", "Скучает", "Ждёт", "Ценит", "Восхищается", "Хочет обнять", "ЛЮБИТ НАВСЕГДА! ❤️"];
+        const flower = document.getElementById('flower');
+        let petalCount = 8;
+        for (let i = 0; i < petalCount; i++) {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            petal.style.transform = `rotate(${i * (360 / petalCount)}deg)`;
+            flower.appendChild(petal);
+        }
+
+        function pluckPetal() {
+            const petals = document.querySelectorAll('.petal:not(.plucked)');
+            if (petals.length > 0) {
+                petals[petals.length - 1].classList.add('plucked');
+                document.getElementById('petal-text').innerText = petalTexts[petalTexts.length - petals.length];
+            }
+        }
+
+        function showModal(id) {
+            document.getElementById(id).style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal, #overlay').forEach(el => el.style.display = 'none');
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.story-card').forEach(card => observer.observe(card));
+
+        // РЕГИСТРАЦИЯ SERVICE WORKER (для работы приложения)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
