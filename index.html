@@ -18,6 +18,18 @@
             transition: 0.3s;
         }
         
+        /* ПОЛЗУНОК ГРОМКОСТИ */
+        .volume-container {
+            position: fixed; top: 85px; left: 20px; z-index: 1000;
+            background: white; border: 2px solid #000; padding: 8px;
+            border-radius: 10px; display: flex; align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .volume-slider {
+            width: 80px; height: 5px; cursor: pointer; accent-color: #d63384;
+        }
+        
         /* ПУЛЬСАЦИЯ ПРИ ВОСПРОИЗВЕДЕНИИ */
         .music-heart-btn.active {
             animation: heart-beat-music 1.2s infinite;
@@ -101,7 +113,13 @@
 <body>
 
     <div class="music-heart-btn" id="musicHeart" onclick="toggleMusic()">❤️</div>
-    <audio id="myAudio" loop>
+    
+    <div class="volume-container">
+        <span style="font-size: 12px; margin-right: 5px;">🔉</span>
+        <input type="range" min="0" max="1" step="0.1" value="0.5" class="volume-slider" id="volumeSlider" oninput="changeVolume(this.value)">
+    </div>
+
+    <audio id="myAudio" loop preload="auto">
         <source src="music.mp3" type="audio/mpeg">
     </audio>
 
@@ -227,17 +245,23 @@
         }
         setInterval(updateTimer, 1000); updateTimer();
 
-        // ФУНКЦИЯ МУЗЫКИ И ПУЛЬСАЦИИ
+        // ФУНКЦИЯ МУЗЫКИ И ГРОМКОСТИ
+        const audio = document.getElementById('myAudio');
+        audio.volume = 0.5; // Громкость по умолчанию 50%
+
         function toggleMusic() {
-            const audio = document.getElementById('myAudio');
             const heartBtn = document.getElementById('musicHeart');
             if (audio.paused) {
-                audio.play().catch(e => console.log("Блокировка браузера"));
+                audio.play().catch(e => console.log("Нужен клик Сони"));
                 heartBtn.classList.add('active');
             } else {
                 audio.pause();
                 heartBtn.classList.remove('active');
             }
+        }
+
+        function changeVolume(val) {
+            audio.volume = val;
         }
 
         const starsContainer = document.getElementById('stars');
