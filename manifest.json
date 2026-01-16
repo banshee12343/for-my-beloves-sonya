@@ -1,7 +1,7 @@
 {
   "name": "Для моей Сони",
-  "short_name": "Для Сони",
-  "start_url": "index.html",
+  "short_name": "Соня ❤️",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#fff5f7",
   "theme_color": "#ffc1d1",
@@ -9,7 +9,8 @@
     {
       "src": "https://cdn-icons-png.flaticon.com/512/833/833472.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
