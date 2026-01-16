@@ -9,6 +9,30 @@
     <style>
         body { margin: 0; padding: 0; background: #fff5f7; font-family: 'Montserrat', sans-serif; color: #4a4a4a; overflow-x: hidden; }
         
+        /* КНОПКА МУЗЫКИ В ВИДЕ СЕРДЦА */
+        .music-heart-btn {
+            position: fixed; top: 20px; left: 20px; z-index: 1000;
+            background: white; border: 2px solid #000; width: 55px; height: 55px;
+            border-radius: 50%; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; font-size: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+        
+        /* АНИМАЦИЯ ПУЛЬСАЦИИ */
+        .music-heart-btn.active {
+            animation: heart-beat-music 1.2s infinite;
+            background: #fff0f3;
+            border-color: #d63384;
+        }
+
+        @keyframes heart-beat-music {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.25); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
+        }
+
         /* ЗВЕЗДЫ */
         .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
         .star { position: absolute; background: white; border-radius: 50%; opacity: 0; animation: twinkle var(--duration) infinite; }
@@ -102,6 +126,11 @@
     </style>
 </head>
 <body>
+
+    <div class="music-heart-btn" id="musicHeart" onclick="toggleMusic()">❤️</div>
+    <audio id="myAudio" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
 
     <div class="stars-container" id="stars"></div>
     <div class="ps-text">p.s Для моей прекрасной девочки Сони</div>
@@ -227,6 +256,19 @@
         }
         setInterval(updateTimer, 1000);
         updateTimer();
+
+        // ФУНКЦИЯ МУЗЫКИ И ПУЛЬСАЦИИ
+        function toggleMusic() {
+            const audio = document.getElementById('myAudio');
+            const heartBtn = document.getElementById('musicHeart');
+            if (audio.paused) {
+                audio.play().catch(e => console.log("Музыка ждет клика"));
+                heartBtn.classList.add('active');
+            } else {
+                audio.pause();
+                heartBtn.classList.remove('active');
+            }
+        }
 
         // ЗВЕЗДЫ
         const starsContainer = document.getElementById('stars');
@@ -371,7 +413,6 @@
             ids.forEach(id => document.getElementById(id).style.display = 'none');
         }
 
-        // Техническая часть: регистрация Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }
